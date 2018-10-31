@@ -17,7 +17,7 @@ $provider = new TwitchProvider([
     'clientId'                => '<YOUR CLIENT ID HERE>',     // The client ID assigned when you created your application
     'clientSecret'            => '<YOUR CLIENT SECRET HERE>', // The client secret assigned when you created your application
     'redirectUri'             => '<YOUR REDIRECT URL HERE>',  // Your redirect URL you specified when you created your application
-    'scopes'                  => ['user_read']                // The scopes you would like to request 
+    'scopes'                  => ['user_read']                // The scopes you would like to request
 ]);
 
 // If we don't have an authorization code then get one
@@ -28,7 +28,12 @@ if (!isset($_GET['code'])) {
     $_SESSION['oauth2state'] = $provider->getState();
 
     // Display link to start auth flow
-    echo "<html><a href=\"$authorizationUrl\">Click here to link your Twitch Account</a><html>";
+    echo '<html>
+        <head><title>Twitch Auth Sample</title></head>
+        <body>
+            <a href="' . $authorizationUrl . '"><img src="http://ttv-api.s3.amazonaws.com/assets/connect_dark.png"></a>
+        </body>
+    </html>';
     exit;
 
 // Check given state against previously stored one to mitigate CSRF attack
@@ -53,13 +58,18 @@ if (!isset($_GET['code'])) {
         $resourceOwner = $provider->getResourceOwner($accessToken);
         $user = $resourceOwner->toArray();
 
-        echo '<html><table>';
-        echo '<tr><th>Access Token</th><td>' . htmlspecialchars($accessToken->getToken()) . '</td></tr>';
-        echo '<tr><th>Refresh Token</th><td>' . htmlspecialchars($accessToken->getRefreshToken()) . '</td></tr>';
-        echo '<tr><th>Username</th><td>' . htmlspecialchars($user['display_name']) . '</td></tr>';
-        echo '<tr><th>Bio</th><td>' . htmlspecialchars($user['bio']) . '</td></tr>';        
-        echo '<tr><th>Image</th><td><img src="' . htmlspecialchars($user['logo']) . '"></td></tr>';
-        echo '</table></html>';
+        echo '<html>
+            <head><title>Twitch Auth Sample</title></head>
+            <body>
+                <table>
+                    <tr><th>Access Token</th><td>' . htmlspecialchars($accessToken->getToken()) . '</td></tr>
+                    <tr><th>Refresh Token</th><td>' . htmlspecialchars($accessToken->getRefreshToken()) . '</td></tr>
+                    <tr><th>Username</th><td>' . htmlspecialchars($user['display_name']) . '</td></tr>
+                    <tr><th>Bio</th><td>' . htmlspecialchars($user['bio']) . '</td></tr>
+                    <tr><th>Image</th><td><img src="' . htmlspecialchars($user['logo']) . '"></td></tr>
+                </table>
+            </body>
+        </html>';
 
         // You can now create authenticated API requests through the provider.
         //$request = $provider->getAuthenticatedRequest(
